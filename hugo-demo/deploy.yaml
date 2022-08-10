@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hugo-demo
+  name: blog-service
+  labels:
+    app: blog
+spec:
+  ports:
+  - port: 1313
+    name: blog
+  selector:
+    app: blog
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+  namespace: hugo-demo
+spec:
+  selector:
+    matchLabels:
+      app: blog
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: blog
+        command:
+        - hugo
+        - server
+        - -D
+        - -e
+        - production
+        image: registry.cn-hangzhou.aliyuncs.com/jarhmj/hugo-demo:8189a05
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1313
+          name: blog
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog-server-ingress
+  namespace: hugo-demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"    # 开启证书
+spec:
+  rules:
+  - host: hugo.lyrzyh.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: blog-service
+            port:
+              name: blog
