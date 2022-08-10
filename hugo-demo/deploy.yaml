@@ -31,12 +31,6 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: blog
-        command:
-        - hugo
-        - server
-        - -D
-        - -e
-        - production
         image: registry.cn-hangzhou.aliyuncs.com/jarhmj/hugo-demo:8189a05
         imagePullPolicy: Always
         ports:
