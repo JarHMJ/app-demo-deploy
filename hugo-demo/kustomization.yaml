@@ -5,4 +5,4 @@ resources:
 - ./deploy.yaml
 images:
 - name: registry.cn-hangzhou.aliyuncs.com/jarhmj/hugo-demo
-  newTag: edfafd6
+  newTag: 821cfbc
